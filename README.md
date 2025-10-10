@@ -66,8 +66,8 @@ The application includes automated database setup. However, if you need to set i
 
 ```sql
 CREATE DATABASE expense_tracker;
-CREATE USER 'nakhan'@'localhost' IDENTIFIED BY 'Linux@1998';
-GRANT ALL PRIVILEGES ON expense_tracker.* TO 'nakhan'@'localhost';
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'Password';
+GRANT ALL PRIVILEGES ON expense_tracker.* TO 'username'@'localhost';
 FLUSH PRIVILEGES;
 USE expense_tracker;
 
