@@ -86,8 +86,8 @@ The `.env` file is already configured in `src/main/resources/`. Update the datab
 
 ```env
 DB_URL=jdbc:mysql://localhost:3306/expense_tracker
-DB_USER=nakhan
-DB_PASSWORD=Linux@1998
+DB_USER=your-username
+DB_PASSWORD=your-password
 ```
 
 ### 4. Build and Run
