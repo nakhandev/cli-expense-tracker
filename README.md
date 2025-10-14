@@ -76,7 +76,8 @@ cli-expense-tracker/
 ├── 🚀 **Enhanced Scripts** ⚡
 │   ├── start.sh          # Smart application launcher with pre-flight checks
 │   ├── stop.sh           # Advanced process manager with cleanup
-│   └── push.sh           # Git workflow automation (renamed from update.sh)
+│   ├── push.sh           # Git workflow automation (renamed from update.sh)
+│   └── push-enhanced.sh  # Professional git push with advanced features
 │
 ├── 📁 **Source Code** 💻
 │   ├── src/main/java/org/expense/tracker/
@@ -124,11 +125,11 @@ mysql --version
 ### 2. **Clone & Setup** ⚡
 ```bash
 # Clone the repository
-git clone https://github.com/nawabdev-nak/cli-expense-tracker.git
+git clone https://github.com/nakhandev/cli-expense-tracker.git
 cd cli-expense-tracker
 
 # Make scripts executable
-chmod +x start.sh stop.sh push.sh
+chmod +x start.sh stop.sh push.sh push-enhanced.sh
 
 # Quick start (includes all setup)
 ./start.sh
@@ -337,6 +338,46 @@ Enter your choice (0-9):
 - ✅ Git status reporting
 - ✅ Conflict detection and resolution guidance
 
+### 🚀 Professional Enhanced Push Script (`push-enhanced.sh`)
+
+**Basic Usage:**
+```bash
+./push-enhanced.sh "commit message"    # Enhanced push with pro features
+./push-enhanced.sh --help              # Show all professional options
+```
+
+**Professional Features:**
+```bash
+./push-enhanced.sh --tag --version v2.0.0 "Release"        # Push with auto-tagging
+./push-enhanced.sh --validate --maven "Bug fixes"          # Push with validation
+./push-enhanced.sh --backup --changelog "Features"         # Push with backup & changelog
+./push-enhanced.sh --release --tag "Production release"    # Full release workflow
+```
+
+**Advanced Options:**
+```bash
+./push-enhanced.sh --status                    # Enhanced status with detailed info
+./push-enhanced.sh --backup "message"          # Create backup before operations
+./push-enhanced.sh --changelog "message"       # Auto-generate changelog
+./push-enhanced.sh --validate "message"        # Run pre-push validation checks
+./push-enhanced.sh --maven "message"           # Validate Maven build before push
+./push-enhanced.sh --tag "message"             # Create version tag automatically
+./push-enhanced.sh --version v2.1.0 "message"  # Specify custom version for tagging
+./push-enhanced.sh --release "message"         # Full release workflow (backup + changelog + tag)
+```
+
+**Professional Features:**
+- ✅ **Automatic Version Tagging** - Creates Git tags based on pom.xml version
+- ✅ **Pre-push Validation** - Validates project structure and files
+- ✅ **Maven Build Validation** - Ensures project compiles before pushing
+- ✅ **Automated Backup** - Creates tar.gz backups before operations
+- ✅ **Changelog Generation** - Auto-generates CHANGELOG.md from commits
+- ✅ **GitHub Release Creation** - Creates GitHub releases with notes (requires GitHub CLI)
+- ✅ **Enhanced Logging** - Detailed logging to `logs/git-enhanced.log`
+- ✅ **Professional Status Display** - Comprehensive git repository information
+- ✅ **Error Recovery** - Advanced error handling and recovery options
+- ✅ **Release Workflow** - Complete release process automation
+
 ---
 
 ## 🔍 Troubleshooting
@@ -404,6 +445,9 @@ All scripts create detailed logs in the `logs/` directory:
 - `logs/startup.log` - Application startup information
 - `logs/shutdown.log` - Application shutdown and cleanup
 - `logs/git.log` - Git operations and push information
+- `logs/git-enhanced.log` - Enhanced push script operations
+- `logs/expense-tracker.log` - Main application logs (with rotation)
+- `logs/expense-tracker-error.log` - Error logs (rotated separately)
 
 ### Performance Issues
 
@@ -474,9 +518,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **💡 Found this project helpful? Give it a ⭐️ star!**
 
-[🔗 Repository](https://github.com/nawabdev-nak/cli-expense-tracker) •
-[🐛 Issues](https://github.com/nawabdev-nak/cli-expense-tracker/issues) •
-[💬 Discussions](https://github.com/nawabdev-nak/cli-expense-tracker/discussions)
+[🔗 Repository](https://github.com/nakhandev/cli-expense-tracker) •
+[🐛 Issues](https://github.com/nakhandev/cli-expense-tracker/issues) •
+[💬 Discussions](https://github.com/nakhandev/cli-expense-tracker/discussions)
 
 *Built with ❤️ using Java, Maven, and MySQL*
 
