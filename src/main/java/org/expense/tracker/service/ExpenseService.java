@@ -113,6 +113,14 @@ public class ExpenseService {
                 ));
     }
 
+    public Map<String, BigDecimal> getMonthlyTotals(List<Expense> expenses) {
+        return expenses.stream()
+                .collect(Collectors.groupingBy(
+                        expense -> expense.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                ));
+    }
+
     public void exportExpensesToCsv(List<Expense> expenses, String filename) {
         Path exportPath = Paths.get(EXPORT_DIR);
         if (!Files.exists(exportPath)) {

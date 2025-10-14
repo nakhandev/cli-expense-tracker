@@ -45,18 +45,30 @@ public class MainApp {
                         addExpense();
                         break;
                     case "2":
-                        viewExpenses();
+                        viewAllExpenses();
                         break;
                     case "3":
-                        updateExpense();
+                        searchExpenses();
                         break;
                     case "4":
-                        deleteExpense();
+                        updateExpense();
                         break;
                     case "5":
-                        exportExpenses();
+                        deleteExpense();
                         break;
                     case "6":
+                        viewSummaryReports();
+                        break;
+                    case "7":
+                        exportExpenses();
+                        break;
+                    case "8":
+                        showSettings();
+                        break;
+                    case "9":
+                        showHelp();
+                        break;
+                    case "0":
                         System.out.println("Exiting application. Goodbye!");
                         logger.info("CLI Expense Tracker application stopped.");
                         DBConnection.closeConnection();
@@ -74,20 +86,25 @@ public class MainApp {
     }
 
     private void printWelcomeMessage() {
-        System.out.println("****************************************");
-        System.out.println("*    Welcome to CLI Expense Tracker    *");
-        System.out.println("****************************************");
+        System.out.println("╔══════════════════════════════════════════════════╗");
+        System.out.println("║          💰 CLI Expense Tracker v2.0          ║");
+        System.out.println("║              Personal Finance Manager           ║");
+        System.out.println("╚══════════════════════════════════════════════════╝");
     }
 
     private void printMenu() {
-        System.out.println("\n--- Main Menu ---");
-        System.out.println("1. Add Expense");
-        System.out.println("2. View/Filter Expenses");
-        System.out.println("3. Update Expense");
-        System.out.println("4. Delete Expense");
-        System.out.println("5. Export Expenses to CSV");
-        System.out.println("6. Exit");
-        System.out.print("Enter your choice: ");
+        System.out.println("\n📋 Main Menu:");
+        System.out.println("1. ➕ Add New Expense");
+        System.out.println("2. 👁️  View All Expenses");
+        System.out.println("3. 🔍 Search/Filter Expenses");
+        System.out.println("4. ✏️  Update Expense");
+        System.out.println("5. 🗑️  Delete Expense");
+        System.out.println("6. 📊 View Summary Reports");
+        System.out.println("7. 📈 Export to CSV");
+        System.out.println("8. ⚙️  Settings");
+        System.out.println("9. ❓ Help");
+        System.out.println("0. 🚪 Exit");
+        System.out.print("\nEnter your choice (0-9): ");
     }
 
     private void addExpense() {
@@ -108,31 +125,39 @@ public class MainApp {
         }
     }
 
-    private void viewExpenses() {
-        System.out.println("\n--- View/Filter Expenses ---");
-        System.out.println("Do you want to filter expenses? (yes/no): ");
-        String filterChoice = scanner.nextLine().trim().toLowerCase();
-
-        List<Expense> expenses;
-        if ("yes".equals(filterChoice)) {
-            LocalDate startDate = promptForDate("Enter start date for filter (YYYY-MM-DD, leave blank for no filter): ");
-            LocalDate endDate = promptForDate("Enter end date for filter (YYYY-MM-DD, leave blank for no filter): ");
-            System.out.print("Enter category for filter (leave blank for no filter): ");
-            String category = scanner.nextLine();
-            BigDecimal minAmount = promptForBigDecimalOptional("Enter minimum amount for filter (leave blank for no filter): ");
-            BigDecimal maxAmount = promptForBigDecimalOptional("Enter maximum amount for filter (leave blank for no filter): ");
-
-            expenses = expenseService.filterExpenses(startDate, endDate, category, minAmount, maxAmount);
-        } else {
-            expenses = expenseService.getAllExpenses();
-        }
+    private void viewAllExpenses() {
+        System.out.println("\n--- View All Expenses ---");
+        List<Expense> expenses = expenseService.getAllExpenses();
 
         if (expenses.isEmpty()) {
             System.out.println("No expenses found.");
             return;
         }
 
-        System.out.println("\n--- Your Expenses ---");
+        displayExpenses(expenses);
+    }
+
+    private void searchExpenses() {
+        System.out.println("\n--- Search/Filter Expenses ---");
+        LocalDate startDate = promptForDate("Enter start date for filter (YYYY-MM-DD, leave blank for no filter): ");
+        LocalDate endDate = promptForDate("Enter end date for filter (YYYY-MM-DD, leave blank for no filter): ");
+        System.out.print("Enter category for filter (leave blank for no filter): ");
+        String category = scanner.nextLine();
+        BigDecimal minAmount = promptForBigDecimalOptional("Enter minimum amount for filter (leave blank for no filter): ");
+        BigDecimal maxAmount = promptForBigDecimalOptional("Enter maximum amount for filter (leave blank for no filter): ");
+
+        List<Expense> expenses = expenseService.filterExpenses(startDate, endDate, category, minAmount, maxAmount);
+
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses found matching your criteria.");
+            return;
+        }
+
+        System.out.println("\n--- Filtered Expenses ---");
+        displayExpenses(expenses);
+    }
+
+    private void displayExpenses(List<Expense> expenses) {
         System.out.printf("%-5s %-12s %-15s %-30s %-10s\n", "ID", "Date", "Category", "Description", "Amount");
         System.out.println("--------------------------------------------------------------------------");
         for (Expense expense : expenses) {
@@ -309,5 +334,138 @@ public class MainApp {
             return text.substring(0, maxLength - 3) + "...";
         }
         return text;
+    }
+
+    private void viewSummaryReports() {
+        System.out.println("\n📊 === EXPENSE SUMMARY REPORTS ===");
+
+        List<Expense> allExpenses = expenseService.getAllExpenses();
+        if (allExpenses.isEmpty()) {
+            System.out.println("No expenses found for reporting.");
+            return;
+        }
+
+        // Total Expenses
+        BigDecimal totalAmount = expenseService.getTotalExpenses(allExpenses);
+        System.out.println("\n💰 Total Expenses: $" + String.format("%.2f", totalAmount));
+
+        // Average Expense
+        BigDecimal averageAmount = totalAmount.divide(BigDecimal.valueOf(allExpenses.size()), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("📊 Average Expense: $" + String.format("%.2f", averageAmount));
+
+        // Category Breakdown
+        System.out.println("\n📈 Category Breakdown:");
+        System.out.println("----------------------------------------");
+        Map<String, BigDecimal> categoryTotals = expenseService.getCategoryTotals(allExpenses);
+        categoryTotals.entrySet().stream()
+            .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+            .forEach(entry -> {
+                String category = entry.getKey();
+                BigDecimal amount = entry.getValue();
+                double percentage = amount.doubleValue() / totalAmount.doubleValue() * 100;
+                System.out.printf("  %-15s: $%8.2f (%5.1f%%)\n", category, amount, percentage);
+            });
+
+        // Monthly Summary (if we have multiple months)
+        System.out.println("\n📅 Monthly Summary:");
+        System.out.println("----------------------------------------");
+        Map<String, BigDecimal> monthlyTotals = expenseService.getMonthlyTotals(allExpenses);
+        monthlyTotals.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .forEach(entry -> {
+                String month = entry.getKey();
+                BigDecimal amount = entry.getValue();
+                System.out.printf("  %-10s: $%8.2f\n", month, amount);
+            });
+
+        // Recent Trends (last 7 days vs previous 7 days)
+        LocalDate today = LocalDate.now();
+        LocalDate lastWeek = today.minusDays(7);
+        LocalDate twoWeeksAgo = today.minusDays(14);
+
+        List<Expense> last7Days = expenseService.filterExpenses(lastWeek, today, null, null, null);
+        List<Expense> previous7Days = expenseService.filterExpenses(twoWeeksAgo, lastWeek, null, null, null);
+
+        BigDecimal last7Total = expenseService.getTotalExpenses(last7Days);
+        BigDecimal previous7Total = expenseService.getTotalExpenses(previous7Days);
+
+        System.out.println("\n📈 Recent Trends:");
+        System.out.println("----------------------------------------");
+        System.out.printf("  Last 7 days:     $%8.2f\n", last7Total);
+        System.out.printf("  Previous 7 days: $%8.2f\n", previous7Total);
+
+        if (previous7Total.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal change = last7Total.subtract(previous7Total);
+            double changePercent = change.doubleValue() / previous7Total.doubleValue() * 100;
+            String trend = change.compareTo(BigDecimal.ZERO) >= 0 ? "📈" : "📉";
+            System.out.printf("  Change:          %s $%8.2f (%+.1f%%)\n", trend, change.abs(), changePercent);
+        }
+    }
+
+    private void showSettings() {
+        System.out.println("\n⚙️  === APPLICATION SETTINGS ===");
+
+        System.out.println("\n📋 Current Configuration:");
+        System.out.println("----------------------------------------");
+
+        // Database settings
+        System.out.println("🗄️  Database:");
+        System.out.println("  URL: " + System.getProperty("DB_URL", "Not configured"));
+        System.out.println("  User: " + System.getProperty("DB_USER", "Not configured"));
+
+        // Application settings
+        System.out.println("\n⚙️  Application:");
+        System.out.println("  Version: 2.0.0");
+        System.out.println("  Log Level: " + System.getProperty("LOG_LEVEL", "INFO"));
+        System.out.println("  Export Path: " + System.getProperty("EXPORT_PATH", "src/main/resources/export/"));
+
+        // Performance settings
+        System.out.println("\n🚀 Performance:");
+        System.out.println("  Max Memory: " + System.getProperty("MAX_MEMORY", "512m"));
+        System.out.println("  Batch Size: " + System.getProperty("BATCH_SIZE", "1000"));
+
+        System.out.println("\n💡 Tips:");
+        System.out.println("  • Use environment variables to configure database settings");
+        System.out.println("  • Check logs directory for application logs");
+        System.out.println("  • Export directory contains CSV files");
+        System.out.println("  • Use 'Help' option for usage guidance");
+    }
+
+    private void showHelp() {
+        System.out.println("\n❓ === CLI EXPENSE TRACKER HELP ===");
+
+        System.out.println("\n📖 Getting Started:");
+        System.out.println("  1. Add expenses with option 1");
+        System.out.println("  2. View all expenses with option 2");
+        System.out.println("  3. Search/filter with option 3");
+        System.out.println("  4. Update expenses with option 4");
+        System.out.println("  5. Delete expenses with option 5");
+
+        System.out.println("\n📊 Advanced Features:");
+        System.out.println("  6. View detailed reports and analytics");
+        System.out.println("  7. Export data to CSV files");
+        System.out.println("  8. Check application settings");
+        System.out.println("  9. Get help and usage tips");
+
+        System.out.println("\n💡 Usage Tips:");
+        System.out.println("  • Use descriptive categories for better organization");
+        System.out.println("  • Add descriptions to remember expense details");
+        System.out.println("  • Use search filters to find specific expenses");
+        System.out.println("  • Export data regularly for backup");
+        System.out.println("  • Check summary reports for spending insights");
+
+        System.out.println("\n🛠️  Data Management:");
+        System.out.println("  • All data is stored in MySQL database");
+        System.out.println("  • Use export feature for data portability");
+        System.out.println("  • Database configuration in .env file");
+        System.out.println("  • Automatic logging for troubleshooting");
+
+        System.out.println("\n⌨️  Keyboard Shortcuts:");
+        System.out.println("  • Enter 0 anytime to exit");
+        System.out.println("  • Press Enter to continue after each action");
+        System.out.println("  • Use Ctrl+C to force quit if needed");
+
+        System.out.println("\n🔗 For more information:");
+        System.out.println("  Check the README.md file for detailed documentation");
     }
 }

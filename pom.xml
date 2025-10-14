@@ -4,7 +4,7 @@
   <groupId>org.expense.tracker</groupId>
   <artifactId>cli-expense-tracker</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>2.0.0</version>
   <name>cli-expense-tracker</name>
   <url>http://maven.apache.org</url>
 
